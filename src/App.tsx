@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import React, { useCallback, useRef, useState } from "react";
 import * as Babel from "@babel/standalone";
 import { flushSync } from "react-dom";
+import { MonakoEditor } from "./components/MonakoEditor";
 
 const defaultSource = `
 function TestComponent() {
@@ -81,14 +82,20 @@ export function App() {
     </foreignObject>
     </svg>`;
 
-    const svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+    const svgBlob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
     const svgObjectUrl = URL.createObjectURL(svgBlob);
 
     const tempImg = new Image();
-    tempImg.addEventListener('load', function () {
+    tempImg.addEventListener("load", function () {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(tempImg, 0, 0);
       URL.revokeObjectURL(svgObjectUrl);
+    });
+
+    window.addEventListener("resize", () => {
+      setupCanvas(canvas);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(tempImg, 0, 0);
     });
 
     tempImg.src = svgObjectUrl;
@@ -97,12 +104,16 @@ export function App() {
 
   return (
     <div className={css.container}>
-      <div>source</div>
-      <textarea className={css.code} value={source} onChange={e => setSource(e.currentTarget.value ?? "")} />
-      <div>root</div>
-      <textarea className={css.code} value={root} onChange={e => setRoot(e.currentTarget.value ?? "")} />
-      <button onClick={handleRender}>render</button>
-      <canvas ref={canvasRef} className={css.canvas} width={512} height={512} />
+      <div className={css.monakoContainer}>
+        <MonakoEditor defaultValue={defaultSource} onChange={e => setSource(e)} />
+        <MonakoEditor defaultValue={defaultRoot} onChange={e => setRoot(e)} />
+      </div>
+      <div className={css.canvasContainer}>
+        <canvas ref={canvasRef} className={css.canvas} />
+        <div className={css.buttonsContainer}>
+          <button onClick={handleRender}>render</button>
+        </div>
+      </div>
     </div>
   );
 }
