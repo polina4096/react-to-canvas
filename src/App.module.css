@@ -1,0 +1,14 @@
+.container {
+  max-width: 512px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.canvas {
+  border: 1px solid black;
+}
+
+.code {
+  height: 128px;
+}
